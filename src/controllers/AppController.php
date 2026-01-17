@@ -13,6 +13,16 @@ class AppController
             exit;
         }
     }
+    //BINGO A2 - allowMethods
+    protected function allowMethods(array $methods): void
+    {
+        $currentMethod = $_SERVER['REQUEST_METHOD'];
+        if (!in_array($currentMethod, $methods)) {
+            header($_SERVER["SERVER_PROTOCOL"] . " 405 Method Not Allowed");
+            echo "Method $currentMethod not allowed";
+            exit;
+        }
+    }
     protected function isGet(): bool
     {
         return $_SERVER["REQUEST_METHOD"] === 'GET';
