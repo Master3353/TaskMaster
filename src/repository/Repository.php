@@ -1,17 +1,20 @@
 <?php
 
-require_once __DIR__."/../../Database.php";
+require_once __DIR__ . "/../../Database.php";
 
-class Repository {
+class Repository
+{
 
     protected $database;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->database = new Database();
     }
 
     public function getUser(string $email)
     {
+        //BINGO A1 - SQL Injection 
         $stmt = $this->database->connect()->prepare('
             SELECT * FROM users u WHERE email = :email
         ');

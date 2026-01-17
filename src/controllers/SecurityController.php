@@ -1,33 +1,40 @@
 <?php
 
 require_once 'AppController.php';
-require_once __DIR__.'/../repository/UserRepository.php';
+require_once __DIR__ . '/../repository/UserRepository.php';
 
-class SecurityController extends AppController {
+class SecurityController extends AppController
+{
 
     private $userRepository;
 
-    public function __construct() {
-        $this->userRepository = new UserRepository();
+    public function __construct()
+    {
+        //BINGO D1 - singleton UserRepository
+        $this->userRepository = UserRepository::getInstance();
     }
 
-    public function login() {
+    public function login()
+    {
 
-        if(!$this->isPost()) {
+        if (!$this->isPost()) {
             return $this->render("login");
         }
 
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
+        //BINGO C1 - validate email
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->render('login', ['messages' => 'Invalid email format']);
+        }
 
         $user = $this->userRepository->getUserByEmail($email);
 
-        if(!$user) {
-            return $this->render("login", ['messages'=> 'User not exists!']);
-        }
-
-        if(!password_verify($password, $user['password'])) {
-            return $this->render("login", ['messages'=> 'Wrong password!']);
+        //BINGO B1 - combine password and email message
+        if (!$user || !password_verify($password, $user['password'])) {
+            return $this->render("login", [
+                'messages' => 'Invalid email or password'
+            ]);
         }
 
         // TODO create user session, cookie, token
@@ -36,9 +43,10 @@ class SecurityController extends AppController {
         header("Location: {$url}/dashboard");
     }
 
-    public function register() {
+    public function register()
+    {
 
-        if($this->isGet()) {
+        if ($this->isGet()) {
             return $this->render("register");
         }
 
@@ -53,11 +61,11 @@ class SecurityController extends AppController {
         }
 
         if ($password !== $password2) {
-             return $this->render("register", ["messages" => "Passwords should be the same!"]);
+            return $this->render("register", ["messages" => "Passwords should be the same!"]);
         }
 
-        if($this->userRepository->getUserByEmail($email)) {
-             return $this->render("register", ["messages" => "User with this email already exists!"]);
+        if ($this->userRepository->getUserByEmail($email)) {
+            return $this->render("register", ["messages" => "User with this email already exists!"]);
         }
 
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);

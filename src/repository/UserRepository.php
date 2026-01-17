@@ -2,10 +2,17 @@
 
 require_once 'Repository.php';
 
-class UserRepository extends Repository {
+class UserRepository extends Repository
+{
 
+    //BINGO D1 - singleton UserRepository
+    private static $instance;
+    public static function getInstance()
+    {
+        return self::$instance ??= new UserRepository();
+    }
 
-    public function getUsers(): ?array 
+    public function getUsers(): ?array
     {
         $query = $this->database->connect()->prepare(
             "
@@ -18,7 +25,8 @@ class UserRepository extends Repository {
         return $users;
     }
 
-    public function getUserByEmail(string $email) {
+    public function getUserByEmail(string $email)
+    {
         $query = $this->database->connect()->prepare(
             "
             SELECT * FROM users WHERE email = :email
@@ -47,7 +55,7 @@ class UserRepository extends Repository {
         $query->execute([
             $firstname,
             $lastname,
-            $email, 
+            $email,
             $hashedPassword,
             $bio
         ]);
