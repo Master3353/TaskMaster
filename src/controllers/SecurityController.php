@@ -92,37 +92,50 @@ class SecurityController extends AppController
 
     public function register()
     {
-
+        $this->allowMethods(['GET', 'POST']);
         if ($this->isGet()) {
             return $this->render("register");
         }
+        if ($this->isPost()) {
 
-        $email = $_POST['email'] ?? '';
-        $password = $_POST['password'] ?? '';
-        $password2 = $_POST['password2'] ?? '';
-        $firstname = $_POST['firstName'] ?? '';
-        $lastname = $_POST['lastName'] ?? '';
+            $email = $_POST['email'] ?? '';
+            $password = $_POST['password'] ?? '';
+            $password2 = $_POST['password2'] ?? '';
+            $firstname = $_POST['firstName'] ?? '';
+            $lastname = $_POST['lastName'] ?? '';
 
-        if (empty($email) || empty($password) || empty($firstname) || empty($lastname)) {
-            return $this->render('register', ['messages' => 'Fill all fields']);
+            if (empty($email) || empty($password) || empty($firstname) || empty($lastname)) {
+                return $this->render('register', ['messages' => 'Fill all fields']);
+            }
+            //BINGO D2 - limit imput length
+            if (strlen($email) > 100 || strlen($password) > 100 || strlen($firstname) > 100 || strlen($lastname) > 100) {
+                return $this->render('register', ['messages' => 'Fields too long']);
+            }
+            if (
+                strlen($password) < 10 ||
+                !preg_match('/[A-Z]/', $password) ||
+                !preg_match('/[a-z]/', $password) ||
+                !preg_match('/[0-9]/', $password)
+            ) {
+                return $this->render("register", ["messages" => "Passwords is weak (min  10 characters, upper/lower case, number)"]);
+            }
+            if ($password !== $password2) {
+                return $this->render("register", ["messages" => "Passwords should be the same!"]);
+            }
+
+            if ($this->userRepository->getUserByEmail($email)) {
+                return $this->render("register", ["messages" => "User with this email already exists!"]);
+            }
+
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+            $this->userRepository->createUser(
+                $email,
+                $hashedPassword,
+                $firstname,
+                $lastname
+            );
+            return $this->render("login", ["messages" => "User registered successfully. Please login!"]);
         }
-
-        if ($password !== $password2) {
-            return $this->render("register", ["messages" => "Passwords should be the same!"]);
-        }
-
-        if ($this->userRepository->getUserByEmail($email)) {
-            return $this->render("register", ["messages" => "User with this email already exists!"]);
-        }
-
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-        $this->userRepository->createUser(
-            $email,
-            $hashedPassword,
-            $firstname,
-            $lastname
-        );
-        return $this->render("login", ["messages" => "User registered successfully. Please login!"]);
     }
 }
