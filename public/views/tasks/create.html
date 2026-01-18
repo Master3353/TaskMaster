@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/login.css">
+    <title>Create Task</title>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-content">
+            <h2>Task Manager</h2>
+            <div class="nav-links">
+                <a href="/tasks">Back to Tasks</a>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <form method="POST" action="/tasks/store">
+        <h1>Create New Task</h1>
+
+        <?php if(isset($messages)): ?>
+        <p class="messages">
+            <?= htmlspecialchars($messages) ?>
+        </p>
+        <?php endif; ?>
+
+        <input name="task_name" type="text" placeholder="Task Name" required maxlength="200" />
+
+        <textarea name="description" placeholder="Task Description" rows="5"></textarea>
+
+        <input name="due_date" type="date" />
+
+        <select name="priority_id">
+            <option value="">Select Priority (Optional)</option>
+            <?php foreach ($priorities as $priority): ?>
+            <option value="<?= $priority['id'] ?>">
+                <?= htmlspecialchars($priority['name']) ?>
+            </option>
+            <?php endforeach; ?>
+        </select>
+
+        <select name="status_id" required>
+            <?php foreach ($statuses as $status): ?>
+            <option value="<?= $status['id'] ?>" <?=$status['id']==1 ? 'selected' : '' ?>>
+                <?= htmlspecialchars($status['name']) ?>
+            </option>
+            <?php endforeach; ?>
+        </select>
+
+        <label>Assign to users:</label>
+        <div class="checkbox-group">
+            <?php foreach ($users as $assignUser): ?>
+            <?php if ($assignUser['enabled']): ?>
+            <label class="checkbox-label">
+                <input type="checkbox" name="assign_to[]" value="<?= $assignUser['id'] ?>"
+                    <?=$assignUser['id']==$user['id'] ? 'checked' : '' ?>>
+                <?= htmlspecialchars($assignUser['firstname'] . ' ' . $assignUser['lastname']) ?>
+            </label>
+            <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+
+        <button type="submit">Create Task</button>
+    </form>
+</body>
+
+</html>

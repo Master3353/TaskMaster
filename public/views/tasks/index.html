@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/tasks.css">
+    <title>My Tasks</title>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-content">
+            <h2>Task Manager</h2>
+            <div class="nav-links">
+                <span>Welcome,
+                    <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?>
+                </span>
+                <?php if ($user['role'] === 'admin'): ?>
+                <a href="/admin">Admin Panel</a>
+                <?php endif; ?>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="stats-container">
+            <h2>Your Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>
+                        <?= $stats['total_tasks'] ?>
+                    </h3>
+                    <p>Total Tasks</p>
+                </div>
+                <div class="stat-card">
+                    <h3>
+                        <?= $stats['completed_tasks'] ?>
+                    </h3>
+                    <p>Completed</p>
+                </div>
+                <div class="stat-card">
+                    <h3>
+                        <?= $stats['in_progress_tasks'] ?>
+                    </h3>
+                    <p>In Progress</p>
+                </div>
+                <div class="stat-card">
+                    <h3>
+                        <?= $stats['overdue_tasks'] ?>
+                    </h3>
+                    <p>Overdue</p>
+                </div>
+                <div class="stat-card">
+                    <h3>
+                        <?= $stats['completion_rate'] ?>%
+                    </h3>
+                    <p>Completion Rate</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tasks-section">
+            <div class="tasks-header">
+                <h2>My Tasks</h2>
+                <a href="/tasks/create" class="btn btn-primary">Create New Task</a>
+            </div>
+
+            <?php if (empty($tasks)): ?>
+            <div class="empty-state">
+                <p>No tasks yet. Create your first task!</p>
+            </div>
+            <?php else: ?>
+            <div class="tasks-list">
+                <?php foreach ($tasks as $task): ?>
+                <div class="task-card <?= strtolower($task['urgency']) ?>">
+                    <div class="task-header">
+                        <h3>
+                            <?= htmlspecialchars($task['task_name']) ?>
+                        </h3>
+                        <span class="priority-badge priority-<?= strtolower($task['priority'] ?? 'none') ?>">
+                            <?= htmlspecialchars($task['priority'] ?? 'No Priority') ?>
+                        </span>
+                    </div>
+
+                    <p class="task-description">
+                        <?= htmlspecialchars($task['description'] ?? 'No description') ?>
+                    </p>
+
+                    <div class="task-meta">
+                        <span class="status-badge status-<?= strtolower(str_replace(' ', '-', $task['status'])) ?>">
+                            <?= htmlspecialchars($task['status']) ?>
+                        </span>
+                        <?php if ($task['due_date']): ?>
+                        <span class="due-date">
+                            Due:
+                            <?= date('M d, Y', strtotime($task['due_date'])) ?>
+                        </span>
+                        <?php endif; ?>
+                        <?php if ($task['urgency'] !== 'On Track'): ?>
+                        <span class="urgency-badge urgency-<?= strtolower($task['urgency']) ?>">
+                            <?= htmlspecialchars($task['urgency']) ?>
+                        </span>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="task-actions">
+                        <a href="/tasks/edit/<?= $task['id'] ?>" class="btn btn-small btn-edit">Edit</a>
+                        <form method="POST" action="/tasks/delete/<?= $task['id'] ?>" style="display: inline;">
+                            <button type="submit" class="btn btn-small btn-delete"
+                                onclick="return confirm('Are you sure you want to delete this task?')">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</body>
+
+</html>

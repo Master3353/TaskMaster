@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Repository.php';
+require_once __DIR__ . '/Repository.php';
 
 class UserRepository extends Repository
 {
@@ -14,9 +14,12 @@ class UserRepository extends Repository
 
     public function getUsers(): ?array
     {
-        $query = $this->database->connect()->prepare(
+         $query = $this->database->connect()->prepare(
             "
-            SELECT * FROM users;
+            SELECT u.id, u.firstname, u.lastname, u.email, u.enabled, u.role
+            FROM users u
+            WHERE u.enabled = TRUE
+            ORDER BY u.firstname, u.lastname;
             "
         );
         $query->execute();
@@ -46,18 +49,44 @@ class UserRepository extends Repository
         string $lastname,
         string $bio = ''
     ) {
-        $query = $this->database->connect()->prepare(
-            "
-            INSERT INTO users (firstname, lastname, email, password, bio)
-            VALUES (?, ?, ?, ?, ?);
-            "
-        );
-        $query->execute([
-            $firstname,
-            $lastname,
-            $email,
-            $hashedPassword,
-            $bio
-        ]);
+        $conn = $this->database->connect();
+        
+        try {
+            $conn->beginTransaction();
+            $query = $this->database->connect()->prepare(
+                "
+                INSERT INTO users (firstname, lastname, email, password)
+                VALUES (?, ?, ?, ?)
+                RETURNING id;
+                "
+            );
+            $query->execute([
+                $firstname,
+                $lastname,
+                $email,
+                $hashedPassword,
+            ]);
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            $userId = $result['id'];
+            
+            // Create user profile
+            $profileQuery = $conn->prepare(
+                "
+                INSERT INTO user_profiles (user_id, bio)
+                VALUES (?, ?);
+                "
+            );
+            $profileQuery->execute([
+                $userId,
+                $bio
+            ]);
+            
+            $conn->commit();
+            return $userId;
+         } catch (PDOException $e) {
+            $conn->rollBack();
+            error_log("User creation failed: " . $e->getMessage());
+            throw $e;
+        }
     }
 }

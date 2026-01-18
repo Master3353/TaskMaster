@@ -2,16 +2,20 @@
 
 require_once 'AppController.php';
 require_once __DIR__ . '/../repository/UserRepository.php';
+require_once __DIR__ . '/../repository/SessionManager.php';
 
 class SecurityController extends AppController
 {
 
     private $userRepository;
+    private $sessionManager;
 
     public function __construct()
     {
         //BINGO D1 - singleton UserRepository
+        parent::__construct();
         $this->userRepository = UserRepository::getInstance();
+        $this->sessionManager = SessionManager::getInstance();
     }
 
     public function login()
@@ -45,7 +49,6 @@ class SecurityController extends AppController
             $user = $this->userRepository->getUserByEmail($email);
 
             //BINGO A4 – limit
-            var_dump($_SESSION['failures'][$email]);
             if ($_SESSION['failures'][$email] >= 5) {
                 sleep(15);
             }
@@ -59,17 +62,33 @@ class SecurityController extends AppController
                 ]);
             }
 
+            // Check if user is enabled
+            if (!$user['enabled']) {
+                return $this->render("login", [
+                    'messages' => 'Your account has been disabled. Contact administrator.'
+                ]);
+            }
+
             $_SESSION['failures'][$email] = 0;
 
             $_SESSION['user'] = [
                 'id' => $user['id'],
                 'email' => $user['email'],
                 'firstname' => $user['firstname'],
-                'lastname' => $user['lastname']
+                'lastname' => $user['lastname'],
+                'role' => $user['role']
             ];
 
-            $token = bin2hex(random_bytes(32));
-            $_SESSION['token'] = $token;
+            // Create session in database
+            $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+            $token = $this->sessionManager->createSession($user['id'], $ipAddress, $userAgent);
+
+            if (!$token) {
+                return $this->render("login", [
+                    'messages' => 'Failed to create session. Please try again.'
+                ]);
+            }
 
             setcookie(
                 'session_token',
@@ -85,8 +104,11 @@ class SecurityController extends AppController
             );
 
             $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/dashboard");
-            exit;
+            if ($user['role'] === 'admin') {
+                header("Location: {$url}/admin");
+            } else {
+                header("Location: {$url}/tasks");
+            }            exit;
         }
     }
 
@@ -137,5 +159,39 @@ class SecurityController extends AppController
             );
             return $this->render("login", ["messages" => "User registered successfully. Please login!"]);
         }
+    }
+    public function logout()
+    {
+        $this->allowMethods(['GET', 'POST']);
+
+        session_start();
+        
+        // Destroy database session
+        $token = $_COOKIE['session_token'] ?? null;
+        if ($token) {
+            $this->sessionManager->destroySession($token);
+        }
+
+        // Clear session
+        $_SESSION = [];
+        session_destroy();
+
+        // Clear cookie
+        setcookie(
+            'session_token',
+            '',
+            [
+                'expires' => time() - 3600,
+                'path' => '/',
+                'domain' => '',
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]
+        );
+
+        $url = "http://$_SERVER[HTTP_HOST]";
+        header("Location: {$url}/login");
+        exit;
     }
 }
