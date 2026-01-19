@@ -152,8 +152,8 @@ nav {
     display: grid;
     grid-template-columns: 1fr auto auto;
     gap: 1rem;
-    margin-bottom: 2rem;
     align-items: center;
+    height: clamp(3rem, 6vw, 3.75rem);
 }
 
 .search-box {
@@ -408,6 +408,7 @@ nav {
 }
 
 .btn-primary {
+    height: 44px;
     background: #6366f1;
     color: white;
 }
@@ -579,3 +580,99 @@ label {
     display: grid;
     gap: 1.5rem;
 }
+/* ===== MOBILE TOP BAR ===== */
+.mobile-topbar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    z-index: 1500;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+.mobile-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* HAMBURGER */
+.hamburger {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+}
+
+/* ===== SIDEBAR FIX ===== */
+nav {
+    z-index: 2000;
+}
+/* ===== SIDEBAR OVERLAY ===== */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1400;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* aktywny overlay */
+.sidebar-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+
+    .mobile-topbar {
+        display: flex;
+    }
+
+    nav {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        width: 260px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        background: #1a1d29;
+    }
+
+    nav.open {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+        padding-top: 72px; /* 🔥 KLUCZ – content POD topbarem */
+    }
+
+    .top-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .top-bar .btn {
+        width: 100%;
+    }
+
+    .tasks-grid,
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nav-user-email {
+        display: none;
+    }
+}
+

@@ -3,60 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/public/styles/tasks.css">
+    <link rel="stylesheet" href="/public/styles/tasks.css">
     <script src="/public/scripts/indexTasks.js" defer></script>
     <title>My Tasks - TaskMaster</title>
 </head>
 <body>
-    <nav>
-        <div class="nav-brand">
-            <h2>TaskMaster</h2>
-        </div>
-        
-        <div class="nav-links">
-            <a href="/tasks">My Tasks</a>
-            <a href="#">Projects(TODO)</a>
-            <a href="#">Calendar(TODO)</a>
-            <a href="#">Settings(TODO)</a>
-        </div>
-        
-        <div class="nav-user">
-            <div class="nav-user-info">
-                <div class="nav-user-avatar">
-                    <?= strtoupper(substr($user['firstname'], 0, 1) . substr($user['lastname'], 0, 1)) ?>
-                </div>
-                <div class="nav-user-details">
-                    <span class="nav-user-name"><?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?></span>
-                    <span class="nav-user-email"><?= htmlspecialchars($user['email']) ?></span>
-                </div>
+
+<!-- MOBILE TOP BAR -->
+<header class="mobile-topbar">
+    <button class="hamburger" id="hamburger">☰</button>
+    <span class="mobile-title">My Tasks</span>
+</header>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+    <div class="nav-brand">
+        <h2>TaskMaster</h2>
+    </div>
+
+    <div class="nav-links">
+        <a href="/tasks" class="active">My Tasks</a>
+        <a href="#">Projects</a>
+        <a href="#">Calendar</a>
+        <a href="#">Settings</a>
+    </div>
+
+    <div class="nav-user">
+        <div class="nav-user-info">
+            <div class="nav-user-avatar">
+                <?= strtoupper(substr($user['firstname'],0,1).substr($user['lastname'],0,1)) ?>
             </div>
-            <?php if ($user['role'] === 'admin'): ?>
-                <a href="/admin">Admin Panel</a>
-            <?php endif; ?>
-            <a href="/logout">Logout</a>
-        </div>
-    </nav>
-
-    <div class="main-content">
-        <div class="page-header">
-            <h1>My Tasks</h1>
-            <p class="page-subtitle">Manage and organize your daily tasks</p>
-        </div>
-
-        <div class="top-bar">
-            <div class="search-box">
-                <input type="text" placeholder="Search tasks..." id="searchInput">
+            <div class="nav-user-details">
+                <span class="nav-user-name"><?= $user['firstname'].' '.$user['lastname'] ?></span>
+                <span class="nav-user-email"><?= $user['email'] ?></span>
             </div>
-            <select class="filter-dropdown" id="statusFilter">
-                <option value="">All Status</option>
-                <option value="not-started">Not Started</option>
-                <option value="in-progress">In Progress</option>
-                <option value="complete">Complete</option>
-            </select>
-            <a href="/tasks/create" class="btn btn-primary">+ Add New Task</a>
         </div>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <?php if (!empty($stats)): ?>
+<!-- CONTENT -->
+<main class="main-content">
+
+    <div class="page-header">
+        <h1>My Tasks</h1>
+        <p class="page-subtitle">Manage and organize your daily tasks</p>
+    </div>
+
+    <div class="top-bar">
+        <input type="text" placeholder="Search tasks..." id="searchInput">
+        <select id="statusFilter">
+            <option value="">All Status</option>
+            <option value="not-started">Not Started</option>
+            <option value="in-progress">In Progress</option>
+            <option value="complete">Complete</option>
+        </select>
+        <a href="/tasks/create" class="btn btn-primary">+ Add New Task</a>
+    </div>
+
+    <?php if (!empty($stats)): ?>
         <div class="stats-grid">
             <div class="stat-card">
                 <h3><?= $stats['total_tasks'] ?></h3>
@@ -118,7 +124,8 @@
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
-    </div>
 
-    </body>
+</main>
+
+</body>
 </html>
