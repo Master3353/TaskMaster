@@ -1,126 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
     <link rel="stylesheet" type="text/css" href="/public/styles/tasks.css">
-    <title>My Tasks</title>
+    <script href="/public/scripts/indexTasks.js" defer></script>
+    <title>My Tasks - TaskMaster</title>
 </head>
-
 <body>
     <nav>
-        <div class="nav-content">
-            <h2>Task Manager</h2>
-            <div class="nav-links">
-                <span>Welcome,
-                    <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?>
-                </span>
-                <?php if ($user['role'] === 'admin'): ?>
-                <a href="/admin">Admin Panel</a>
-                <?php endif; ?>
-                <a href="/logout">Logout</a>
+        <div class="nav-brand">
+            <h2>TaskMaster</h2>
+        </div>
+        
+        <div class="nav-links">
+            <a href="/tasks">My Tasks</a>
+            <a href="/tasks/create">Projects</a>
+            <a href="#">Calendar</a>
+            <a href="#">Settings</a>
+        </div>
+        
+        <div class="nav-user">
+            <div class="nav-user-info">
+                <div class="nav-user-avatar">
+                    <?= strtoupper(substr($user['firstname'], 0, 1) . substr($user['lastname'], 0, 1)) ?>
+                </div>
+                <div class="nav-user-details">
+                    <span class="nav-user-name"><?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?></span>
+                    <span class="nav-user-email"><?= htmlspecialchars($user['email']) ?></span>
+                </div>
             </div>
+            <?php if ($user['role'] === 'admin'): ?>
+                <a href="/admin">Admin Panel</a>
+            <?php endif; ?>
+            <a href="/logout">Logout</a>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="stats-container">
-            <h2>Your Statistics</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>
-                        <?= $stats['total_tasks'] ?>
-                    </h3>
-                    <p>Total Tasks</p>
-                </div>
-                <div class="stat-card">
-                    <h3>
-                        <?= $stats['completed_tasks'] ?>
-                    </h3>
-                    <p>Completed</p>
-                </div>
-                <div class="stat-card">
-                    <h3>
-                        <?= $stats['in_progress_tasks'] ?>
-                    </h3>
-                    <p>In Progress</p>
-                </div>
-                <div class="stat-card">
-                    <h3>
-                        <?= $stats['overdue_tasks'] ?>
-                    </h3>
-                    <p>Overdue</p>
-                </div>
-                <div class="stat-card">
-                    <h3>
-                        <?= $stats['completion_rate'] ?>%
-                    </h3>
-                    <p>Completion Rate</p>
-                </div>
-            </div>
+    <div class="main-content">
+        <div class="page-header">
+            <h1>My Tasks</h1>
+            <p class="page-subtitle">Manage and organize your daily tasks</p>
         </div>
 
-        <div class="tasks-section">
-            <div class="tasks-header">
-                <h2>My Tasks</h2>
-                <a href="/tasks/create" class="btn btn-primary">Create New Task</a>
+        <div class="top-bar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search tasks..." id="searchInput">
             </div>
+            <select class="filter-dropdown" id="statusFilter">
+                <option value="">All Status</option>
+                <option value="not-started">Not Started</option>
+                <option value="in-progress">In Progress</option>
+                <option value="complete">Complete</option>
+            </select>
+            <a href="/tasks/create" class="btn btn-primary">+ Add New Task</a>
+        </div>
 
-            <?php if (empty($tasks)): ?>
+        <?php if (!empty($stats)): ?>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3><?= $stats['total_tasks'] ?></h3>
+                <p>Total Tasks</p>
+            </div>
+            <div class="stat-card">
+                <h3><?= $stats['in_progress_tasks'] ?></h3>
+                <p>In Progress</p>
+            </div>
+            <div class="stat-card">
+                <h3><?= $stats['completed_tasks'] ?></h3>
+                <p>Completed</p>
+            </div>
+            <div class="stat-card">
+                <h3><?= $stats['completion_rate'] ?>%</h3>
+                <p>Completion Rate</p>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <?php if (empty($tasks)): ?>
             <div class="empty-state">
                 <p>No tasks yet. Create your first task!</p>
+                <a href="/tasks/create" class="btn btn-primary">Create Task</a>
             </div>
-            <?php else: ?>
-            <div class="tasks-list">
+        <?php else: ?>
+            <div class="tasks-grid">
                 <?php foreach ($tasks as $task): ?>
-                <div class="task-card <?= strtolower($task['urgency']) ?>">
-                    <div class="task-header">
-                        <h3>
-                            <?= htmlspecialchars($task['task_name']) ?>
-                        </h3>
-                        <span class="priority-badge priority-<?= strtolower($task['priority'] ?? 'none') ?>">
-                            <?= htmlspecialchars($task['priority'] ?? 'No Priority') ?>
-                        </span>
+                    <div class="task-card <?= strtolower(str_replace(' ', '-', $task['urgency'])) ?>" data-status="<?= strtolower(str_replace(' ', '-', $task['status'])) ?>">
+                        <div class="task-header">
+                            <h3><?= htmlspecialchars($task['task_name']) ?></h3>
+                        </div>
+                        
+                        <p class="task-description">
+                            <?= htmlspecialchars($task['description'] ?? 'No description') ?>
+                        </p>
+                        
+                        <div class="task-meta">
+                            <?php if ($task['due_date']): ?>
+                                <span class="task-due">
+                                    📅 Due: <?= date('d M, Y', strtotime($task['due_date'])) ?>
+                                </span>
+                            <?php endif; ?>
+                            <span class="priority-badge priority-<?= strtolower($task['priority'] ?? 'none') ?>">
+                                <?= htmlspecialchars($task['priority'] ?? 'No Priority') ?>
+                            </span>
+                        </div>
+                        
+                        <div class="task-actions">
+                            <a href="/tasks/edit/<?= $task['id'] ?>" class="btn btn-small btn-edit">Edit</a>
+                            <form method="POST" action="/tasks/delete/<?= $task['id'] ?>" style="display: inline;">
+                                <button type="submit" class="btn btn-small btn-delete" 
+                                        onclick="return confirm('Are you sure you want to delete this task?')">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
                     </div>
-
-                    <p class="task-description">
-                        <?= htmlspecialchars($task['description'] ?? 'No description') ?>
-                    </p>
-
-                    <div class="task-meta">
-                        <span class="status-badge status-<?= strtolower(str_replace(' ', '-', $task['status'])) ?>">
-                            <?= htmlspecialchars($task['status']) ?>
-                        </span>
-                        <?php if ($task['due_date']): ?>
-                        <span class="due-date">
-                            Due:
-                            <?= date('M d, Y', strtotime($task['due_date'])) ?>
-                        </span>
-                        <?php endif; ?>
-                        <?php if ($task['urgency'] !== 'On Track'): ?>
-                        <span class="urgency-badge urgency-<?= strtolower($task['urgency']) ?>">
-                            <?= htmlspecialchars($task['urgency']) ?>
-                        </span>
-                        <?php endif; ?>
-                    </div>
-
-                    <div class="task-actions">
-                        <a href="/tasks/edit/<?= $task['id'] ?>" class="btn btn-small btn-edit">Edit</a>
-                        <form method="POST" action="/tasks/delete/<?= $task['id'] ?>" style="display: inline;">
-                            <button type="submit" class="btn btn-small btn-delete"
-                                onclick="return confirm('Are you sure you want to delete this task?')">
-                                Delete
-                            </button>
-                        </form>
-                    </div>
-                </div>
                 <?php endforeach; ?>
             </div>
-            <?php endif; ?>
-        </div>
+        <?php endif; ?>
     </div>
-</body>
 
+    </body>
 </html>

@@ -1,72 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
-    <link rel="stylesheet" type="text/css" href="/public/styles/login.css">
-    <title>Create Task</title>
+    <link rel="stylesheet" type="text/css" href="/public/styles/tasks.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/createTasks.css">
+    <title>Add Task - TaskMaster</title>
 </head>
-
 <body>
     <nav>
-        <div class="nav-content">
-            <h2>Task Manager</h2>
-            <div class="nav-links">
-                <a href="/tasks">Back to Tasks</a>
-                <a href="/logout">Logout</a>
+        <div class="nav-brand">
+            <h2>TaskMaster</h2>
+        </div>
+        
+        <div class="nav-links">
+            <a href="/tasks">Dashboard</a>
+            <a href="/tasks">My Tasks</a>
+            <a href="/tasks/create" class="active">Projects</a>
+            <a href="#">Calendar</a>
+            <a href="#">Settings</a>
+        </div>
+        
+        <div class="nav-user">
+            <div class="nav-user-info">
+                <div class="nav-user-avatar">
+                    <?= strtoupper(substr($user['firstname'], 0, 1) . substr($user['lastname'], 0, 1)) ?>
+                </div>
+                <div class="nav-user-details">
+                    <span class="nav-user-name"><?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?></span>
+                    <span class="nav-user-email"><?= htmlspecialchars($user['email']) ?></span>
+                </div>
             </div>
+            <?php if ($user['role'] === 'admin'): ?>
+                <a href="/admin">Admin Panel</a>
+            <?php endif; ?>
+            <a href="/logout">Logout</a>
         </div>
     </nav>
 
-    <form method="POST" action="/tasks/store">
-        <h1>Create New Task</h1>
-
-        <?php if(isset($messages)): ?>
-        <p class="messages">
-            <?= htmlspecialchars($messages) ?>
-        </p>
-        <?php endif; ?>
-
-        <input name="task_name" type="text" placeholder="Task Name" required maxlength="200" />
-
-        <textarea name="description" placeholder="Task Description" rows="5"></textarea>
-
-        <input name="due_date" type="date" />
-
-        <select name="priority_id">
-            <option value="">Select Priority (Optional)</option>
-            <?php foreach ($priorities as $priority): ?>
-            <option value="<?= $priority['id'] ?>">
-                <?= htmlspecialchars($priority['name']) ?>
-            </option>
-            <?php endforeach; ?>
-        </select>
-
-        <select name="status_id" required>
-            <?php foreach ($statuses as $status): ?>
-            <option value="<?= $status['id'] ?>" <?=$status['id']==1 ? 'selected' : '' ?>>
-                <?= htmlspecialchars($status['name']) ?>
-            </option>
-            <?php endforeach; ?>
-        </select>
-
-        <label>Assign to users:</label>
-        <div class="checkbox-group">
-            <?php foreach ($users as $assignUser): ?>
-            <?php if ($assignUser['enabled']): ?>
-            <label class="checkbox-label">
-                <input type="checkbox" name="assign_to[]" value="<?= $assignUser['id'] ?>"
-                    <?=$assignUser['id']==$user['id'] ? 'checked' : '' ?>>
-                <?= htmlspecialchars($assignUser['firstname'] . ' ' . $assignUser['lastname']) ?>
-            </label>
-            <?php endif; ?>
-            <?php endforeach; ?>
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Add Task</h1>
+            <p class="page-subtitle">Create a new task to organize your work</p>
         </div>
 
-        <button type="submit">Create Task</button>
-    </form>
-</body>
+        <form method="POST" action="/tasks/store">
+            <?php if(isset($messages)): ?>
+                <p class="messages">
+                    <?= htmlspecialchars($messages) ?>
+                </p>
+            <?php endif; ?>
 
+            <label for="task_name">Task Name</label>
+            <input name="task_name" id="task_name" type="text" placeholder="Enter task name" required maxlength="200" />
+            
+            <label for="description">Description</label>
+            <textarea name="description" id="description" placeholder="Enter task description" rows="5"></textarea>
+            
+            <label for="due_date">Due Date</label>
+            <input name="due_date" id="due_date" type="date" />
+            
+            <label for="priority_id">Priority</label>
+            <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+                <?php foreach ($priorities as $priority): ?>
+                    <label class="priority-option" style="flex: 1;">
+                        <input type="radio" name="priority_id" value="<?= $priority['id'] ?>" 
+                               style="display: none;" class="priority-radio">
+                        <div class="priority-button priority-<?= strtolower($priority['name']) ?>">
+                            <?= htmlspecialchars($priority['name']) ?>
+                        </div>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+            
+            <label for="status_id">Status</label>
+            <select name="status_id" id="status_id" required>
+                <?php foreach ($statuses as $status): ?>
+                    <option value="<?= $status['id'] ?>" <?= $status['id'] == 1 ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($status['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <label>Assign to users:</label>
+            <div class="checkbox-group">
+                <?php foreach ($users as $assignUser): ?>
+                    <?php if ($assignUser['enabled']): ?>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="assign_to[]" value="<?= $assignUser['id'] ?>"
+                                   <?= $assignUser['id'] == $user['id'] ? 'checked' : '' ?>>
+                            <?= htmlspecialchars($assignUser['firstname'] . ' ' . $assignUser['lastname']) ?>
+                        </label>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Add Task</button>
+                <a href="/tasks" class="btn btn-edit">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
 </html>

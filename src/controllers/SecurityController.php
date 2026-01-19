@@ -20,7 +20,7 @@ class SecurityController extends AppController
 
     public function login()
     {
-
+        
         //BINGO A2 – GET and POST
         $this->allowMethods(['GET', 'POST']);
 

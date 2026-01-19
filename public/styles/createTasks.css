@@ -1,0 +1,42 @@
+.priority-option {
+    cursor: pointer;
+}
+
+.priority-button {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.priority-radio:checked + .priority-button {
+    border-color: currentColor;
+    transform: scale(1.05);
+}
+
+.priority-button.priority-low {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.priority-button.priority-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.priority-button.priority-high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.priority-button.priority-critical {
+    background: #fce7f3;
+    color: #9f1239;
+}
+
+.priority-button:hover {
+    opacity: 0.8;
+}
