@@ -241,7 +241,7 @@ $$ LANGUAGE plpgsql;
 -- Insert sample admin and users
 INSERT INTO users (firstname, lastname, email, password, role, enabled)
 VALUES 
-    ('Admin', 'User', 'admin@example.com', '$2y$10$YourHashedPasswordHere', 'admin', TRUE),
+    ('Admin', 'User', 'admin@example.com', '$2y$10$38GxhY02ri1SBTiso7lOg.efXNbwxtEI721fkP9LUemD6BnfHdAOS', 'admin', TRUE),
     ('Jan', 'Kowalski', 'jan.kowalski@example.com', '$2y$10$ZbzQrqD1vDhLJpYe/vzSbeDJHTUnVPCpwlXclkiFa8dO5gOAfg8tq', 'user', TRUE),
     ('Anna', 'Nowak', 'anna.nowak@example.com', '$2y$10$ZbzQrqD1vDhLJpYe/vzSbeDJHTUnVPCpwlXclkiFa8dO5gOAfg8tq', 'user', TRUE);
 
