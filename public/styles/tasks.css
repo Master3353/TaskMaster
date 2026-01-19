@@ -177,14 +177,6 @@ nav {
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-.search-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #9ca3af;
-}
-
 .filter-dropdown {
     padding: 0.875rem 1.25rem;
     border: 1px solid #e5e7eb;

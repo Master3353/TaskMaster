@@ -3,6 +3,7 @@
         const taskCards = document.querySelectorAll('.task-card');
 
         function filterTasks() {
+
             const searchTerm = searchInput.value.toLowerCase();
             const statusValue = statusFilter.value;
 
@@ -17,6 +18,5 @@
                 card.style.display = (matchesSearch && matchesStatus) ? 'block' : 'none';
             });
         }
-
         searchInput.addEventListener('input', filterTasks);
         statusFilter.addEventListener('change', filterTasks);
