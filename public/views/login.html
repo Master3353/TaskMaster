@@ -1,28 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="public/styles/main.css" />
-    <link rel="stylesheet" type="text/css" href="public/styles/login.css" />
-    <title>LOGIN</title>
-  </head>
-  <body>
-    <form method="POST" action="\login">
-      <h1>LOGIN</h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/public/styles/login.css">
+    <title>Login - TaskMaster</title>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-sidebar">
+            <div class="login-brand">
+                <h1>TaskMaster</h1>
+            </div>
+            
+            <div class="sample-tasks">
+                <div class="sample-task completed">
+                    <div class="task-check">✓</div>
+                    <div>
+                        <div class="task-title">Finalize project proposal</div>
+                        <div class="task-time">Today</div>
+                    </div>
+                </div>
+                <div class="sample-task">
+                    <div class="task-check"></div>
+                    <div>
+                        <div class="task-title">Schedule team meeting</div>
+                    </div>
+                </div>
+                <div class="sample-task">
+                    <div class="task-check"></div>
+                    <div>
+                        <div class="task-title">Review Q3 performance report</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="login-form-container">
+            <form method="POST" action="/login">
+                <h2>Welcome Back!</h2>
+                <p class="login-subtitle">Log in to continue managing your tasks</p>
 
-      <?php if(isset($messages)): ?>
+                <?php if(isset($messages)): ?>
+                    <p class="messages">
+                        <?= htmlspecialchars($messages) ?>
+                    </p>
+                <?php endif; ?>
 
-      <p class="messages">
-        <?= $messages ?>
-      </p>
+                <label for="email">Email</label>
+                <input name="email" id="email" type="email" placeholder="name@example.com" required />
+                
+                <label for="password">Password</label>
+                <input name="password" id="password" type="password" placeholder="Enter your password" required />
+                
+                <div class="form-footer">
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
 
-      <?php endif; ?>
-      <input name="email" type="email" placeholder="Twój email" />
-      <input name="password" type="password" placeholder="Twoje hasło" />
-      <button type="submit">LOGIN</button>
+                <button type="submit" class="btn-login">Log In</button>
 
-      <a href="/register">zarejestruj się!</a>
-    </form>
-  </body>
+                <p class="signup-link">
+                    Don't have an account? <a href="/register">Sign up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</body>
 </html>
