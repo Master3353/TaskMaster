@@ -6,117 +6,54 @@ require_once 'src/controllers/AdminController.php';
 
 class Routing
 {
-    public static $routes = [
-        "login" => [
-            "controller" => "SecurityController",
-            "action" => "login"
-        ],
-        "register" => [
-            "controller" => "SecurityController",
-            "action" => "register"
-        ],
-        "logout" => [
-            "controller" => "SecurityController",
-            "action" => "logout"
-        ],
-        "tasks" => [
-            "controller" => "TaskController",
-            "action" => "index"
-        ],
-        "tasks/create" => [
-            "controller" => "TaskController",
-            "action" => "create"
-        ],
-        "tasks/store" => [
-            "controller" => "TaskController",
-            "action" => "store"
-        ],
-        "admin" => [
-            "controller" => "AdminController",
-            "action" => "index"
-        ],
-        "admin/users" => [
-            "controller" => "AdminController",
-            "action" => "users"
-        ],
+    private static array $routes = [
+        'login' => ['SecurityController', 'login'],
+        'register' => ['SecurityController', 'register'],
+        'logout' => ['SecurityController', 'logout'],
+
+        'tasks' => ['TaskController', 'index'],
+        'tasks/create' => ['TaskController', 'create'],
+        'tasks/store' => ['TaskController', 'store'],
+        'tasks/edit/{id}' => ['TaskController', 'edit'],
+        'tasks/update/{id}' => ['TaskController', 'update'],
+        'tasks/delete/{id}' => ['TaskController', 'delete'],
+
+        'admin' => ['AdminController', 'index'],
+        'admin/users' => ['AdminController', 'users'],
+        'admin/users/view/{id}' => ['AdminController', 'viewUser'],
+        'admin/users/toggle/{id}' => ['AdminController', 'toggleUserStatus'],
+        'admin/users/delete/{id}' => ['AdminController', 'deleteUser'],
+        'admin/users/role/{id}' => ['AdminController', 'updateUserRole'],
+        'admin/sessions/invalidate/{id}' => ['AdminController', 'invalidateSession'],
     ];
 
     public static function run(string $path)
     {
-        // Handle root path
-        if (empty($path)) {
-            header("Location: /login");
-            exit;
-        }
+        if ($path === '') {
+        header('Location: /login');
+        exit;
+    }
 
-        // Handle dynamic routes with parameters
-        // Pattern: tasks/edit/123 or tasks/delete/123
-        if (preg_match('#^tasks/edit/(\d+)$#', $path, $matches)) {
-            $controller = new TaskController();
-            $controller->edit((int)$matches[1]);
+    foreach (self::$routes as $route => [$controller, $action]) {
+
+        // Zamiana {id} → regex
+        $pattern = preg_replace('#\{[a-zA-Z]+\}#', '(\d+)', $route);
+        $pattern = '#^' . $pattern . '$#';
+
+        if (preg_match($pattern, $path, $matches)) {
+            array_shift($matches); // usuń full match
+
+            $controllerObj = new $controller();
+            $controllerObj->$action(...$matches);
             return;
         }
+    }
 
-        if (preg_match('#^tasks/update/(\d+)$#', $path, $matches)) {
-            $controller = new TaskController();
-            $controller->update((int)$matches[1]);
-            return;
-        }
+    if ($path === 'dashboard') {
+        header('Location: /tasks');
+        exit;
+    }
 
-        if (preg_match('#^tasks/delete/(\d+)$#', $path, $matches)) {
-            $controller = new TaskController();
-            $controller->delete((int)$matches[1]);
-            return;
-        }
-
-        // Admin routes with parameters
-        if (preg_match('#^admin/users/view/(\d+)$#', $path, $matches)) {
-            $controller = new AdminController();
-            $controller->viewUser((int)$matches[1]);
-            return;
-        }
-
-        if (preg_match('#^admin/users/toggle/(\d+)$#', $path, $matches)) {
-            $controller = new AdminController();
-            $controller->toggleUserStatus((int)$matches[1]);
-            return;
-        }
-
-        if (preg_match('#^admin/users/delete/(\d+)$#', $path, $matches)) {
-            $controller = new AdminController();
-            $controller->deleteUser((int)$matches[1]);
-            return;
-        }
-
-        if (preg_match('#^admin/users/role/(\d+)$#', $path, $matches)) {
-            $controller = new AdminController();
-            $controller->updateUserRole((int)$matches[1]);
-            return;
-        }
-
-        if (preg_match('#^admin/sessions/invalidate/(\d+)$#', $path, $matches)) {
-            $controller = new AdminController();
-            $controller->invalidateSession((int)$matches[1]);
-            return;
-        }
-
-        // Handle static routes
-        if (isset(self::$routes[$path])) {
-            $controller = self::$routes[$path]["controller"];
-            $action = self::$routes[$path]["action"];
-
-            $controllerObj = new $controller;
-            $controllerObj->$action();
-            return;
-        }
-
-        // Legacy dashboard route
-        if ($path === 'dashboard') {
-            header("Location: /tasks");
-            exit;
-        }
-
-        // 404
-        include 'public/views/404.html';
+    include 'public/views/404.html';
     }
 }
