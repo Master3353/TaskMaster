@@ -1,104 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
-    <link rel="stylesheet" type="text/css" href="/public/styles/admin.css">
-    <title>Manage Users</title>
+    <link rel="stylesheet" href="/public/styles/tasks.css">
+    <title>Manage Users - TaskMaster</title>
 </head>
-
 <body>
-    <nav>
-        <div class="nav-content">
-            <h2>Admin Dashboard</h2>
-            <div class="nav-links">
-                <a href="/admin">Dashboard</a>
-                <a href="/tasks">My Tasks</a>
-                <a href="/logout">Logout</a>
+
+<nav>
+    <div class="nav-brand">
+        <h2>TaskMaster</h2>
+    </div>
+
+    <div class="nav-links">
+        <a href="/tasks">My Tasks</a>
+        <a href="/admin">Admin Dashboard</a>
+        <a href="/admin/users" class="active">Users</a>
+    </div>
+
+    <div class="nav-user">
+        <div class="nav-user-info">
+            <div class="nav-user-avatar">
+                <?= strtoupper(substr($user['firstname'],0,1).substr($user['lastname'],0,1)) ?>
+            </div>
+            <div class="nav-user-details">
+                <span class="nav-user-name">
+                    <?= htmlspecialchars($user['firstname'].' '.$user['lastname']) ?>
+                </span>
+                <span class="nav-user-email">
+                    <?= htmlspecialchars($user['email']) ?>
+                </span>
             </div>
         </div>
-    </nav>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
 
-    <div class="container">
+<div class="main-content">
+
+    <!-- HEADER -->
+    <div class="page-header">
         <h1>User Management</h1>
+        <p class="page-subtitle">Manage system users and permissions</p>
+    </div>
+
+    <!-- USERS TABLE -->
+    <div class="tasks-section">
+        <div class="tasks-header">
+            <h2>All Users</h2>
+        </div>
 
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
                     <th>Status</th>
-                    <th>Created</th>
-                    <th>Last Login</th>
-                    <th>Active Sessions</th>
+                    <th>Sessions</th>
                     <th>Tasks</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($users as $userRow): ?>
+                <?php foreach ($users as $u): ?>
                 <tr>
+                    <td><?= htmlspecialchars($u['firstname'].' '.$u['lastname']) ?></td>
+                    <td><?= htmlspecialchars($u['email']) ?></td>
                     <td>
-                        <?= $userRow['id'] ?>
-                    </td>
-                    <td>
-                        <?= htmlspecialchars($userRow['firstname'] . ' ' . $userRow['lastname']) ?>
-                    </td>
-                    <td>
-                        <?= htmlspecialchars($userRow['email']) ?>
-                    </td>
-                    <td>
-                        <span class="role-badge role-<?= $userRow['role'] ?>">
-                            <?= htmlspecialchars($userRow['role']) ?>
+                        <span class="priority-badge priority-none">
+                            <?= htmlspecialchars($u['role']) ?>
                         </span>
                     </td>
                     <td>
-                        <span class="status-badge status-<?= $userRow['enabled'] ? 'enabled' : 'disabled' ?>">
-                            <?= $userRow['enabled'] ? 'Enabled' : 'Disabled' ?>
+                        <span class="status-badge <?= $u['enabled'] ? 'status-complete' : 'status-not-started' ?>">
+                            <?= $u['enabled'] ? 'Enabled' : 'Disabled' ?>
                         </span>
                     </td>
-                    <td>
-                        <?= date('M d, Y', strtotime($userRow['created_at'])) ?>
-                    </td>
-                    <td>
-                        <?= $userRow['last_login'] ? date('M d, Y H:i', strtotime($userRow['last_login'])) : 'Never' ?>
-                    </td>
-                    <td>
-                        <?php if ($userRow['active_sessions'] > 0): ?>
-                        <span class="badge badge-warning">
-                            <?= $userRow['active_sessions'] ?>
-                        </span>
-                        <?php else: ?>
-                        <span class="badge badge-success">0</span>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?= $userRow['assigned_tasks'] ?>
-                    </td>
-                    <td class="action-buttons">
-                        <a href="/admin/users/view/<?= $userRow['id'] ?>" class="btn btn-small btn-info">
-                            View
-                        </a>
+                    <td><?= $u['active_sessions'] ?></td>
+                    <td><?= $u['assigned_tasks'] ?></td>
+                    <td class="task-actions">
 
-                        <?php if ($userRow['id'] != $user['id']): ?>
-                        <form method="POST" action="/admin/users/toggle/<?= $userRow['id'] ?>" style="display: inline;">
-                            <button type="submit" class="btn btn-small btn-warning">
-                                <?= $userRow['enabled'] ? 'Disable' : 'Enable' ?>
+                        <?php if ($u['id'] != $user['id']): ?>
+                        <form method="POST" action="/admin/users/toggle/<?= $u['id'] ?>" style="display:inline;">
+                            <button class="btn btn-small btn-primary" type="submit">
+                                <?= $u['enabled'] ? 'Disable' : 'Enable' ?>
                             </button>
                         </form>
 
-                        <form method="POST" action="/admin/users/delete/<?= $userRow['id'] ?>" style="display: inline;"
-                            onsubmit="return confirm('Are you sure? User can only be deleted if not logged in.');">
-                            <button type="submit" class="btn btn-small btn-delete">
+                        <form method="POST" action="/admin/users/delete/<?= $u['id'] ?>" style="display:inline;"
+                              onsubmit="return confirm('Are you sure? User can only be deleted if not logged in.');">
+                            <button class="btn btn-small btn-delete" type="submit">
                                 Delete
                             </button>
                         </form>
                         <?php else: ?>
-                        <span class="text-muted">(You)</span>
+                            <span class="text-muted">(You)</span>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -107,12 +105,7 @@
         </table>
     </div>
 
-    <script>
-        // Auto-refresh to show updated session counts
-        setTimeout(() => {
-            location.reload();
-        }, 60000); // Refresh every minute
-    </script>
-</body>
+</div>
 
+</body>
 </html>

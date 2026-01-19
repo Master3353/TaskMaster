@@ -1,178 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/public/styles/main.css">
-    <link rel="stylesheet" type="text/css" href="/public/styles/admin.css">
-    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/public/styles/tasks.css">
+    <title>Admin Dashboard - TaskMaster</title>
 </head>
-
 <body>
-    <nav>
-        <div class="nav-content">
-            <h2>Admin Dashboard</h2>
-            <div class="nav-links">
-                <a href="/tasks">My Tasks</a>
-                <a href="/admin/users">Manage Users</a>
-                <span>Admin:
-                    <?= htmlspecialchars($user['firstname']) ?>
+
+<nav>
+    <div class="nav-brand">
+        <h2>TaskMaster</h2>
+    </div>
+
+    <div class="nav-links">
+        <a href="/tasks">My Tasks</a>
+        <a href="/admin" class="active">Admin Dashboard</a>
+        <a href="/admin/users">Users</a>
+    </div>
+
+    <div class="nav-user">
+        <div class="nav-user-info">
+            <div class="nav-user-avatar">
+                <?= strtoupper(substr($user['firstname'], 0, 1) . substr($user['lastname'], 0, 1)) ?>
+            </div>
+            <div class="nav-user-details">
+                <span class="nav-user-name">
+                    <?= htmlspecialchars($user['firstname'] . ' ' . $user['lastname']) ?>
                 </span>
-                <a href="/logout">Logout</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container">
-        <h1>System Overview</h1>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>
-                    <?= $stats['total_active_users'] ?>
-                </h3>
-                <p>Active Users</p>
-            </div>
-            <div class="stat-card">
-                <h3>
-                    <?= $stats['total_disabled_users'] ?>
-                </h3>
-                <p>Disabled Users</p>
-            </div>
-            <div class="stat-card">
-                <h3>
-                    <?= $stats['total_tasks'] ?>
-                </h3>
-                <p>Total Tasks</p>
-            </div>
-            <div class="stat-card">
-                <h3>
-                    <?= $stats['completed_tasks'] ?>
-                </h3>
-                <p>Completed Tasks</p>
-            </div>
-            <div class="stat-card">
-                <h3>
-                    <?= $stats['in_progress_tasks'] ?>
-                </h3>
-                <p>In Progress</p>
-            </div>
-            <div class="stat-card">
-                <h3>
-                    <?= $stats['overdue_tasks'] ?>
-                </h3>
-                <p>Overdue Tasks</p>
-            </div>
-            <div class="stat-card">
-                <h3>
-                    <?= $stats['active_sessions'] ?>
-                </h3>
-                <p>Active Sessions</p>
+                <span class="nav-user-email">
+                    <?= htmlspecialchars($user['email']) ?>
+                </span>
             </div>
         </div>
 
-        <div class="section">
-            <h2>Recent Users</h2>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Active Sessions</th>
-                        <th>Tasks</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach (array_slice($users, 0, 10) as $userRow): ?>
-                    <tr>
-                        <td>
-                            <?= $userRow['id'] ?>
-                        </td>
-                        <td>
-                            <?= htmlspecialchars($userRow['firstname'] . ' ' . $userRow['lastname']) ?>
-                        </td>
-                        <td>
-                            <?= htmlspecialchars($userRow['email']) ?>
-                        </td>
-                        <td>
-                            <span class="role-badge role-<?= $userRow['role'] ?>">
-                                <?= htmlspecialchars($userRow['role']) ?>
-                            </span>
-                        </td>
-                        <td>
-                            <span class="status-badge status-<?= $userRow['enabled'] ? 'enabled' : 'disabled' ?>">
-                                <?= $userRow['enabled'] ? 'Enabled' : 'Disabled' ?>
-                            </span>
-                        </td>
-                        <td>
-                            <?= $userRow['active_sessions'] ?>
-                        </td>
-                        <td>
-                            <?= $userRow['assigned_tasks'] ?>
-                        </td>
-                        <td>
-                            <a href="/admin/users/view/<?= $userRow['id'] ?>" class="btn btn-small">View</a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            <a href="/admin/users" class="btn btn-primary" style="margin-top: 1rem;">View All Users</a>
-        </div>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
 
-        <div class="section">
-            <h2>Recent Tasks</h2>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Task Name</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                        <th>Created By</th>
-                        <th>Assigned To</th>
-                        <th>Due Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach (array_slice($tasks, 0, 10) as $task): ?>
-                    <tr>
-                        <td>
-                            <?= $task['id'] ?>
-                        </td>
-                        <td>
-                            <?= htmlspecialchars($task['task_name']) ?>
-                        </td>
-                        <td>
-                            <span class="priority-badge priority-<?= strtolower($task['priority'] ?? 'none') ?>">
-                                <?= htmlspecialchars($task['priority'] ?? 'None') ?>
-                            </span>
-                        </td>
-                        <td>
-                            <span class="status-badge status-<?= strtolower(str_replace(' ', '-', $task['status'])) ?>">
-                                <?= htmlspecialchars($task['status']) ?>
-                            </span>
-                        </td>
-                        <td>
-                            <?= htmlspecialchars($task['created_by']) ?>
-                        </td>
-                        <td>
-                            <?= $task['assigned_to_count'] ?> user(s)
-                        </td>
-                        <td>
-                            <?= $task['due_date'] ? date('M d, Y', strtotime($task['due_date'])) : 'N/A' ?>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+<div class="main-content">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <h1>Admin Dashboard</h1>
+        <p class="page-subtitle">System overview and management</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3><?= $stats['total_active_users'] ?></h3>
+            <p>Active Users</p>
+        </div>
+        <div class="stat-card">
+            <h3><?= $stats['total_disabled_users'] ?></h3>
+            <p>Disabled Users</p>
+        </div>
+        <div class="stat-card">
+            <h3><?= $stats['total_tasks'] ?></h3>
+            <p>Total Tasks</p>
+        </div>
+        <div class="stat-card">
+            <h3><?= $stats['completed_tasks'] ?></h3>
+            <p>Completed</p>
+        </div>
+        <div class="stat-card">
+            <h3><?= $stats['in_progress_tasks'] ?></h3>
+            <p>In Progress</p>
+        </div>
+        <div class="stat-card">
+            <h3><?= $stats['overdue_tasks'] ?></h3>
+            <p>Overdue</p>
         </div>
     </div>
-</body>
 
+    <!-- RECENT USERS -->
+    <div class="tasks-section">
+        <div class="tasks-header">
+            <h2>Recent Users</h2>
+            <a href="/admin/users" class="btn btn-primary">View All</a>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Tasks</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach (array_slice($users, 0, 5) as $u): ?>
+                <tr>
+                    <td><?= htmlspecialchars($u['firstname'] . ' ' . $u['lastname']) ?></td>
+                    <td><?= htmlspecialchars($u['email']) ?></td>
+                    <td>
+                        <span class="priority-badge priority-none">
+                            <?= htmlspecialchars($u['role']) ?>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge <?= $u['enabled'] ? 'status-complete' : 'status-not-started' ?>">
+                            <?= $u['enabled'] ? 'Enabled' : 'Disabled' ?>
+                        </span>
+                    </td>
+                    <td><?= $u['assigned_tasks'] ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- RECENT TASKS -->
+    <div class="tasks-section" style="margin-top:2rem;">
+        <div class="tasks-header">
+            <h2>Recent Tasks</h2>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Assigned</th>
+                    <th>Due</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach (array_slice($tasks, 0, 5) as $task): ?>
+                <tr>
+                    <td><?= htmlspecialchars($task['task_name']) ?></td>
+                    <td>
+                        <span class="status-badge status-<?= strtolower(str_replace(' ', '-', $task['status'])) ?>">
+                            <?= htmlspecialchars($task['status']) ?>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="priority-badge priority-<?= strtolower($task['priority'] ?? 'none') ?>">
+                            <?= htmlspecialchars($task['priority'] ?? 'None') ?>
+                        </span>
+                    </td>
+                    <td><?= $task['assigned_to_count'] ?></td>
+                    <td>
+                        <?= $task['due_date'] ? date('d M Y', strtotime($task['due_date'])) : '—' ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
 </html>
