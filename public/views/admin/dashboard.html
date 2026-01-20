@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/public/styles/tasks.css">
+    <link rel="stylesheet" href="/public/styles/adminMobile.css">
+    <script src="/public/scripts/hamburger.js" defer></script>
     <title>Admin Dashboard - TaskMaster</title>
 </head>
 <body>
-
-<nav>
+<header class="mobile-topbar">
+    <button class="hamburger" id="hamburger">☰</button>
+    <span class="mobile-title">Admin Dashboard</span>
+</header>
+<nav id="sidebar">
     <div class="nav-brand">
         <h2>TaskMaster</h2>
     </div>
@@ -37,7 +42,7 @@
         <a href="/logout">Logout</a>
     </div>
 </nav>
-
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 <div class="main-content">
 
     <!-- HEADER -->

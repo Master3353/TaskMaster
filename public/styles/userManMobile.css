@@ -1,0 +1,49 @@
+/* ===============================
+   USER MANAGEMENT – MOBILE
+   =============================== */
+@media (max-width: 768px) {
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+        padding-top: 72px;
+    }
+
+    /* Header */
+    .page-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.95rem;
+    }
+
+    /* Table wrapper */
+    .data-table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    /* Actions stack */
+    .task-actions {
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .task-actions .btn {
+        width: 100%;
+    }
+
+    /* Sidebar cleanup */
+    .nav-user-email {
+        display: none;
+    }
+}
