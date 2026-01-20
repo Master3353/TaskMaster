@@ -39,6 +39,9 @@
                 <span class="nav-user-email"><?= $user['email'] ?></span>
             </div>
         </div>
+        <?php if ($user['role'] === 'admin'): ?>
+            <a href="/admin">Admin Panel</a>
+        <?php endif; ?>
         <a href="/logout">Logout</a>
     </div>
 </nav>
