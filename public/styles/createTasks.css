@@ -40,3 +40,79 @@
 .priority-button:hover {
     opacity: 0.8;
 }
+
+@media (max-width: 768px) {
+
+    /* Main content spacing */
+    .main-content {
+        padding: 1rem;
+        padding-top: 72px; /* miejsce na mobile-topbar */
+    }
+
+    /* Page header */
+    .page-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.95rem;
+    }
+
+    /* Form container */
+    form {
+        padding: 1.25rem;
+        border-radius: 12px;
+    }
+
+    /* Inputs */
+    input[type="text"],
+    input[type="date"],
+    textarea,
+    select {
+        font-size: 0.95rem;
+        padding: 0.75rem 0.9rem;
+    }
+
+    textarea {
+        min-height: 110px;
+    }
+
+    /* Priority buttons stack */
+    .priority-option {
+        flex: 1 1 100%;
+    }
+
+    .priority-button {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    /* Status select */
+    #status_id {
+        margin-bottom: 1rem;
+    }
+
+    /* Checkbox group */
+    .checkbox-group {
+        max-height: 180px;
+        padding: 0.75rem;
+    }
+
+    /* Form actions */
+    form > div:last-child {
+        flex-direction: column;
+    }
+
+    form > div:last-child .btn {
+        width: 100%;
+    }
+
+    /* Nav tweaks */
+    .nav-user-email {
+        display: none;
+    }
+}

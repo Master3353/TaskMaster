@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/public/styles/tasks.css">
     <link rel="stylesheet" type="text/css" href="/public/styles/createTasks.css">
+    <script src="/public/scripts/hamburger.js" defer></script>
     <title>Add Task - TaskMaster</title>
 </head>
 <body>
-    <nav>
+    <!-- MOBILE TOP BAR -->
+    <header class="mobile-topbar">
+        <button class="hamburger" id="hamburger">☰</button>
+        <span class="mobile-title">Add Task</span>
+    </header>
+    <nav id="sidebar">
         <div class="nav-brand">
             <h2>TaskMaster</h2>
         </div>
@@ -36,7 +42,7 @@
             <a href="/logout">Logout</a>
         </div>
     </nav>
-
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <div class="main-content">
         <div class="page-header">
             <h1>Add Task</h1>
